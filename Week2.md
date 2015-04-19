@@ -148,3 +148,149 @@ public class SingleThreadedServerClient {
     }
 }
 ```
+
+## 4
+
+`SwingApplication.java`
+
+```java
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class SwingApplication extends JFrame implements ActionListener {
+
+    private TextArea textArea;
+
+    public SwingApplication() {
+        super("Planet Viewer");
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setSize(400, 150);
+        build(getContentPane());
+        setVisible(true);
+    }
+
+    private void build(Container pane) {
+        //-- Text --//
+        textArea = new TextArea();
+        pane.add(textArea, BorderLayout.CENTER);
+
+        //-- Buttons --//
+        JPanel btnPanel = new JPanel();
+        btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.Y_AXIS));
+        pane.add(btnPanel, BorderLayout.EAST);
+
+        ButtonGroup radioGroup = new ButtonGroup();
+        String[] planets = {
+                "first:Mercury", "second:Venus", "third:Earth", "fourth:Mars"
+        };
+        for (String planet : planets) {
+            JRadioButton radioButton = new JRadioButton(planet.split(":")[1]);
+            btnPanel.add(radioButton, BorderLayout.EAST);
+            radioGroup.add(radioButton);
+
+            radioButton.setActionCommand(planet);
+            radioButton.addActionListener(this);
+
+            if (radioGroup.getSelection() == null) {
+                radioGroup.setSelected(radioButton.getModel(), true);
+            }
+        }
+        renderPlanet(planets[0]);
+
+        //-- Exist
+        JButton exitBtn = new JButton("Exit");
+        btnPanel.add(exitBtn, BorderLayout.EAST);
+
+        exitBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingApplication.this.dispose();
+            }
+        });
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        renderPlanet(e.getActionCommand());
+    }
+
+    private void renderPlanet(String text) {
+        String[] split = text.split(":");
+        this.textArea.setText("About " + split[1] + ": The " + split[0] + " planet from the sun");
+    }
+
+    public static void main(String args[]) {
+        new SwingApplication();
+    }
+}
+```
+
+## 5
+
+`Main.java`
+
+```java
+package sample;
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+public class Main extends Application {
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        primaryStage.setTitle("Hello World");
+        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+```
+
+`sample.fxml`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <top>
+        <Button mnemonicParsing="false" onAction="#onHello" text="Click Me!" BorderPane.alignment="CENTER"/>
+    </top>
+    <center>
+        <TextArea fx:id="txtHello" BorderPane.alignment="CENTER"/>
+    </center>
+</BorderPane>
+```
+
+`Controller.java`
+
+```java
+package sample;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.TextArea;
+
+public class Controller {
+
+    @FXML
+    public TextArea txtHello;
+
+    public void onHello(ActionEvent e) {
+        txtHello.appendText("Hello World\n");
+        System.out.println("Hello World");
+    }
+}
+```
